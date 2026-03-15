@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban Board</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
+  <script>
+      // Initialize the polyfill as soon as the page loads
+      window.addEventListener('touchmove', function() {}, {passive: false});
+       MobileDragDrop.polyfill();
+  </script>
+</head>
+<body>  
+
+
+
+
+<!-- Google Pile blob decorations -->
+<div class="blobs">
+  <svg width="500" height="500" style="top:-160px;left:-150px;" viewBox="0 0 500 500">
+    <path d="M250 30 C340 -5,430 45,455 135 C480 225,460 340,380 390 C300 440,180 450,110 390 C40 330,10 210,45 120 C80 30,170 65,250 30Z" fill="#FF6B6B" opacity="0.11"/>
+  </svg>
+  <svg width="380" height="340" style="top:-100px;right:-100px;" viewBox="0 0 380 340">
+    <path d="M200 20 C275 -12,360 35,372 120 C384 205,340 295,255 320 C170 345,72 305,35 220 C-2 135,28 28,110 8 C150 -2,165 42,200 20Z" fill="#FFAA00" opacity="0.12"/>
+  </svg>
+  <svg width="420" height="400" style="bottom:-130px;left:-90px;" viewBox="0 0 420 400">
+    <path d="M185 18 C270 -12,375 42,400 138 C425 234,385 335,295 370 C205 405,88 372,38 275 C-12 178,12 65,90 28 C125 12,140 40,185 18Z" fill="#00C49A" opacity="0.1"/>
+  </svg>
+  <svg width="320" height="310" style="bottom:-70px;right:-70px;" viewBox="0 0 320 310">
+    <path d="M158 12 C218 -10,296 34,308 108 C320 182,284 264,210 286 C136 308,44 276,18 202 C-8 128,22 36,86 14 C118 4,128 28,158 12Z" fill="#8B5CF6" opacity="0.09"/>
+  </svg>
+  <svg width="200" height="180" style="top:80px;left:50%;transform:translateX(-50%);" viewBox="0 0 200 180">
+    <path d="M100 10 C142 -5,188 22,194 70 C200 118,174 168,128 176 C82 184,26 158,10 112 C-6 66,16 8,58 4 C74 2,82 16,100 10Z" fill="#EC4899" opacity="0.07"/>
+  </svg>
+  <svg width="240" height="230" style="top:42%;right:-50px;" viewBox="0 0 240 230">
+    <path d="M118 14 C162 -6,214 28,222 78 C230 128,202 192,150 210 C98 228,34 202,12 152 C-10 102,12 28,58 10 C80 2,96 28,118 14Z" fill="#3B82F6" opacity="0.09"/>
+  </svg>
+  <svg width="70" height="70" style="top:220px;left:210px;" viewBox="0 0 70 70">
+    <circle cx="35" cy="35" r="35" fill="#FF6B6B" opacity="0.06"/>
+  </svg>
+  <svg width="50" height="50" style="bottom:28%;right:33%;" viewBox="0 0 50 50">
+    <circle cx="25" cy="25" r="25" fill="#00C49A" opacity="0.09"/>
+  </svg>
+  <svg width="90" height="80" style="top:55%;left:20px;" viewBox="0 0 90 80">
+    <ellipse cx="45" cy="40" rx="45" ry="40" fill="#FFAA00" opacity="0.07"/>
+  </svg>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">📋</div>
+    <div>
+      <h1>Kan<span>ban</span> Board</h1>
+      <p style="font-size:12px;color:#7A7A9A;margin-top:1px;font-weight:400;">control your tasks</p>
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill">
+      <span class="dot" style="background:var(--col1);"></span>
+      <span id="stat-todo">0</span>&nbsp;to do
+    </div>
+    <div class="stat-pill">
+      <span class="dot" style="background:var(--col2);"></span>
+      <span id="stat-doing">0</span>&nbsp;doing
+    </div>
+    <div class="stat-pill">
+      <span class="dot" style="background:var(--col3);"></span>
+      <span id="stat-done">0</span>&nbsp;done
+    </div>
+  </div>
+</header>
+
+<!-- Board -->
+<div class="board">
+
+  <!-- To Do -->
+  <div class="column col-1" id="col-todo"
+    ondragover="onDragOver(event,'todo')"
+    ondrop="onDrop(event,'todo')"
+    ondragleave="onDragLeave(event)">
+    <div class="col-header">
+      <div class="col-title-row">
+        <div class="col-title">
+          <span class="col-emoji">🔴</span> To Do
+          <span class="col-count" id="cnt-todo">0</span>
+        </div>
+      </div>
+      <div class="col-sub">Waiting to be started</div>
+    </div>
+    <button class="add-btn" onclick="showAddForm('todo')">
+      <span class="add-icon">＋</span> Add a task
+    </button>
+    <div id="form-todo"></div>
+    <div class="tasks" id="tasks-todo"></div>
+  </div>
+
+  <!-- Doing -->
+  <div class="column col-2" id="col-doing"
+    ondragover="onDragOver(event,'doing')"
+    ondrop="onDrop(event,'doing')"
+    ondragleave="onDragLeave(event)">
+    <div class="col-header">
+      <div class="col-title-row">
+        <div class="col-title">
+          <span class="col-emoji">🟡</span> Doing
+          <span class="col-count" id="cnt-doing">0</span>
+        </div>
+      </div>
+      <div class="col-sub">Currently in progress</div>
+    </div>
+    <button class="add-btn" onclick="showAddForm('doing')">
+      <span class="add-icon">＋</span> Add a task
+    </button>
+    <div id="form-doing"></div>
+    <div class="tasks" id="tasks-doing"></div>
+  </div>
+
+  <!-- Done -->
+  <div class="column col-3" id="col-done"
+    ondragover="onDragOver(event,'done')"
+    ondrop="onDrop(event,'done')"
+    ondragleave="onDragLeave(event)">
+    <div class="col-header">
+      <div class="col-title-row">
+        <div class="col-title">
+          <span class="col-emoji">🟢</span> Done
+          <span class="col-count" id="cnt-done">0</span>
+        </div>
+      </div>
+      <div class="col-sub">Completed tasks</div>
+    </div>
+    <button class="add-btn" onclick="showAddForm('done')">
+      <span class="add-icon">＋</span> Add a task
+    </button>
+    <div id="form-done"></div>
+    <div class="tasks" id="tasks-done"></div>
+  </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-bg" id="modal" style="display:none" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>✏️ Edit Task</h2>
+    <textarea id="modal-text" rows="3" placeholder="What needs to be done?"></textarea>
+    <div class="modal-chips" id="modal-chips"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="document.getElementById('modal').style.display='none'">Cancel</button>
+      <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
